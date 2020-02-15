@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     Card, Button, CardHeader, CardBody,
-     Form, FormGroup, Label, Input, Row, Col, Table} from 'reactstrap';
+     Form, FormGroup, Label, Input, Row, Col, Table, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import NavBar from './NavBar';
 import axios from 'axios';
 
@@ -12,10 +12,17 @@ export default class addPatients extends Component {
             Name: '',
             LastName: '',
             Patients: [],
-            error: 0
+            error: 0, 
+            modal: false
         };
+        this.toggle = this.toggle.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
     }
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
     componentDidMount(props){
         axios.get('http://127.0.0.1:5000/api/addPatient')
         .then(response => response.data)
@@ -88,7 +95,7 @@ export default class addPatients extends Component {
                         display: 'block',
                         horizontalAlign: 'center',
                         width: "12.5%"
-                    }} color = "success" type="submit" onClick={this.onFormSubmit}>Add</Button>
+                    }} color = "success" onClick={this.toggle}>Add</Button>
                     </Form>
                 </CardBody>
             </Card>
@@ -120,6 +127,20 @@ export default class addPatients extends Component {
             </Card>
             </Col>
             </Row>
+            <Modal isOpen = {this.state.modal} toggle={this.toggle} className={this.props.className}>
+          <ModalHeader toggle={this.toggle}>Please confirm</ModalHeader>
+          <ModalBody>
+            Are you sure you want to add this patient's data? 
+          </ModalBody>
+          <ModalFooter>
+            <Button color="success" onClick={this.onFormSubmit}>
+              Add Patient
+            </Button>{" "}
+            <Button color="secondary" onClick={this.toggle}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
         </div >
     }
 }

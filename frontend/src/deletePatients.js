@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
     Card, Button, CardHeader, CardBody,
-     Form, FormGroup, Label, Input, Row, Col, Table} from 'reactstrap';
+     Form, FormGroup, Label, Input, Row, Col, Table, Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import NavBar from './NavBar';
 import axios from 'axios';
 
@@ -12,10 +12,14 @@ export default class deletePatients extends Component {
             Name: '',
             LastName: '',
             Patients: [],
-            error: 0
+            error: 0, 
+            modal: false
+    
         };
+        this.toggle = this.toggle.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
     }
+
     componentDidMount(props){
         axios.get('http://127.0.0.1:5000/api/deletePatient')
         .then(response => response.data)
@@ -30,7 +34,11 @@ export default class deletePatients extends Component {
             [name]: value
         });
     }
-
+    toggle() {
+        this.setState({
+          modal: !this.state.modal
+        });
+      }
     onFormSubmit = event => {
         event.preventDefault();
         if((this.state.Name=='')|(this.state.LastName=='')){
@@ -68,7 +76,7 @@ export default class deletePatients extends Component {
                 display: 'block',
                 horizontalAlign: 'center'
             }}>
-                <CardHeader style={{ backgroundColor: '#6495ED', color: 'white'}}><strong>Add Patient</strong></CardHeader>
+                <CardHeader style={{ backgroundColor: '#6495ED', color: 'white'}}><strong>Delete Patient</strong></CardHeader>
 
                 <CardBody>
                     <Form>
@@ -87,7 +95,7 @@ export default class deletePatients extends Component {
                         display: 'block',
                         horizontalAlign: 'center',
                         width: "12.5%"
-                    }} color = "danger" type="submit" onClick={this.onFormSubmit}>Delete</Button>
+                    }} color = "danger" onClick={this.toggle}>Delete</Button>
                     </Form>
                 </CardBody>
             </Card>
@@ -119,6 +127,20 @@ export default class deletePatients extends Component {
             </Card>
             </Col>
             </Row>
+            <Modal isOpen = {this.state.modal} toggle={this.toggle} className={this.props.className}>
+          <ModalHeader toggle={this.toggle}>Please confirm</ModalHeader>
+          <ModalBody>
+            Are you sure you want to delete this patient's data? Note that you could be deleting sensitive information and there's no going back. 
+          </ModalBody>
+          <ModalFooter>
+            <Button color="danger" onClick={this.onFormSubmit}>
+              Delete Patient
+            </Button>{" "}
+            <Button color="secondary" onClick={this.toggle}>
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
         </div >
     }
 }
